@@ -1,0 +1,22 @@
+{
+  "name": "code-translator-skills",
+  "description": "Turn a piece of code into plain language: a beginner deep dive or an experienced fast pass, any language, single-file HTML output.",
+  "author": {
+    "name": "Les1l",
+    "url": "https://github.com/Les1l"
+  },
+  "homepage": "https://github.com/Les1l/code-translator-skill",
+  "repository": "https://github.com/Les1l/code-translator-skill",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "agent-skills",
+    "claude-code",
+    "codex",
+    "code-explanation",
+    "learning"
+  ],
+  "skills": [
+    "./skills/coding/code-translator"
+  ]
+}

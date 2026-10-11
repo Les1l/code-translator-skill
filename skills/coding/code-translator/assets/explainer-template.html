@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<!--
+  代码讲解单文件模板（code-translator 技能专用）
+  用法：
+  1. 全局搜索 {{...}} 占位符，全部替换为实际内容；替换完不应再残留 {{ }}
+  2. 区块按需增删。模式 B（速读）删除：术语表 / 变量追踪表 / 执行路径图 / 易错点 / 检验理解
+  3. 代码粘贴进 <pre class="code-block"> 时，把 & 换成 &amp;、< 换成 &lt;、> 换成 &gt;
+  4. data-start="3" 指定这块代码的第一行在原文件里的真实行号（不写默认 1）
+  5. data-hl="3-5,8" 高亮指定行，行号必须是原文件的真实行号，且必须与逐行表里的行号一致
+  6. 不要改 <style> 和底部 <script>，改这两处会让不同讲解文件的观感不一致
+-->
+<style>
+:root{
+  --bg:#FBFAF7; --surface:#FFFFFF; --surface2:#F5F4F0; --text:#24242A; --muted:#5F5E5A;
+  --border:rgba(0,0,0,.12); --border2:rgba(0,0,0,.06); --accent:#534AB7; --accent-bg:#EEEDFE;
+  --code-bg:#F5F4F0; --hl-bg:#FAEEDA; --ok:#0F6E56; --warn:#BA7517; --bad:#A32D2D;
+}
+[data-theme="dark"]{
+  --bg:#1B1B1F; --surface:#24242A; --surface2:#2C2C33; --text:#ECECEE; --muted:#A3A3AB;
+  --border:rgba(255,255,255,.16); --border2:rgba(255,255,255,.08); --accent:#AFA9EC;
+  --accent-bg:#2E2B4D; --code-bg:#15151A; --hl-bg:#4A3A16; --ok:#5DCAA5; --warn:#EF9F27; --bad:#F09595;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.75 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;}
+.wrap{max-width:920px;margin:0 auto;padding:32px 24px 96px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;padding-bottom:16px;
+  border-bottom:1px solid var(--border);margin-bottom:8px}
+h1{font-size:22px;font-weight:600;margin:0;flex:1 1 320px}
+.badge{font-size:12px;padding:3px 10px;border-radius:20px;background:var(--accent-bg);
+  color:var(--accent);white-space:nowrap}
+.badge.plain{background:var(--surface2);color:var(--muted)}
+#theme{margin-left:auto;font-size:12px;padding:5px 12px;border:1px solid var(--border);
+  border-radius:20px;background:var(--surface);color:var(--text);cursor:pointer}
+.sub{color:var(--muted);font-size:13px;margin:4px 0 24px}
+nav{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:14px 18px;margin:0 0 28px}
+nav ol{margin:0;padding-left:20px;columns:2;column-gap:28px}
+nav a{color:var(--text);text-decoration:none;font-size:13px}
+nav a:hover{color:var(--accent);text-decoration:underline}
+section{margin:0 0 34px}
+h2{font-size:17px;font-weight:600;margin:0 0 12px;padding-left:10px;
+  border-left:3px solid var(--accent)}
+h3{font-size:15px;font-weight:600;margin:22px 0 10px}
+p{margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:12px 0;
+  background:var(--surface);border-radius:10px;overflow:hidden}
+th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface2);font-weight:600;white-space:nowrap}
+td.num{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;width:1%}
+td code,li code,p code{background:var(--code-bg);padding:1px 5px;border-radius:4px;
+  font-family:Consolas,"Cascadia Mono",Menlo,monospace;font-size:.9em}
+pre.code-block{background:var(--code-bg);border:1px solid var(--border2);border-radius:10px;
+  margin:12px 0;padding:12px 0;overflow-x:auto}
+pre.code-block code{display:block;font-family:Consolas,"Cascadia Mono",Menlo,monospace;
+  font-size:13px;line-height:1.7;white-space:pre}
+.ln{display:block;padding:0 14px 0 0}
+.ln .n{display:inline-block;width:3.2em;padding-right:12px;text-align:right;
+  color:var(--muted);opacity:.65;user-select:none}
+.ln.hit{background:var(--hl-bg);box-shadow:inset 3px 0 0 var(--accent)}
+.hint{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--warn);
+  border-radius:10px;padding:12px 16px;font-size:13.5px}
+.hint strong{color:var(--warn)}
+details{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:10px 16px;margin:12px 0}
+details summary{cursor:pointer;font-weight:600;font-size:14px;outline:none}
+details[open] summary{margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border2)}
+.diagram{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:16px;overflow-x:auto;text-align:center}
+.diagram pre{text-align:left;background:var(--code-bg);border-radius:8px;padding:12px;
+  font-family:Consolas,monospace;font-size:12.5px;overflow-x:auto;margin:0}
+.birdseye{background:var(--accent-bg);border-radius:12px;padding:16px 20px;font-size:16px;
+  font-weight:600;color:var(--text)}
+.pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:20px;
+  border:1px solid var(--border);color:var(--muted);margin-right:6px}
+.ok{color:var(--ok)} .bad{color:var(--bad)}
+ul.tight li{margin:5px 0}
+footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--border);padding-top:14px}
+@media print{nav,#theme{display:none}details{page-break-inside:avoid}
+  details:not([open])>*{display:block!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>{{TITLE}}</h1>
+  <span class="badge">{{MODE}}</span>
+  <span class="badge plain">{{LANG}}</span>
+  <button id="theme" type="button">切换深色</button>
+</header>
+<p class="sub">{{SUBTITLE}}</p>
+
+<nav>
+  <ol>
+    <li><a href="#assumptions">本次讲解的假设</a></li>
+    <li><a href="#birdseye">一句话鸟瞰</a></li>
+    <li><a href="#terms">前置术语表</a></li>
+    <li><a href="#blocks">逐块精讲</a></li>
+    <li><a href="#trace">变量追踪表</a></li>
+    <li><a href="#flow">执行路径图</a></li>
+    <li><a href="#io">输入 → 输出</a></li>
+    <li><a href="#pitfalls">易错点</a></li>
+    <li><a href="#improve">可改进点</a></li>
+    <li><a href="#summary">收尾总结</a></li>
+    <li><a href="#quiz">检验理解</a></li>
+  </ol>
+</nav>
+
+<!-- 可选区块：只有真的缺外部上下文时才保留，否则整节删掉 -->
+<section id="assumptions">
+  <h2>本次讲解的假设</h2>
+  <ul class="tight">
+    <li>{{ASSUMPTION_1}}</li>
+  </ul>
+</section>
+
+<section id="birdseye">
+  <h2>一句话鸟瞰</h2>
+  <div class="birdseye">{{BIRDSEYE_40_CHARS}}</div>
+  <p><span class="pill">类型：{{KIND}}</span><span class="pill">范式：{{PARADIGM}}</span></p>
+</section>
+
+<section id="terms">
+  <h2>前置术语表</h2>
+  <table>
+    <thead><tr><th>术语</th><th>白话解释</th><th>在这段代码里的角色</th></tr></thead>
+    <tbody>
+      <tr><td>{{TERM}}</td><td>{{PLAIN_WORDS}}</td><td>{{ROLE_HERE}}</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="blocks">
+  <h2>逐块精讲</h2>
+
+  <h3>第 1 块 · 第 {{X}}–{{Y}} 行 · {{BLOCK_TITLE}}</h3>
+  <pre class="code-block" data-lang="{{LANG}}"><code>{{CODE_OF_BLOCK}}</code></pre>
+  <table>
+    <thead><tr><th>行</th><th>这行做什么</th><th>为什么需要它</th><th>不写会怎样</th></tr></thead>
+    <tbody>
+      <tr><td class="num">{{N}}</td><td>{{WHAT}}</td><td>{{WHY}}</td><td>{{WHAT_IF}}</td></tr>
+    </tbody>
+  </table>
+  <p><strong>块小结：</strong>{{BLOCK_SUMMARY}}</p>
+
+  <h3>第 2 块 · 第 {{X}}–{{Y}} 行 · {{BLOCK_TITLE}}</h3>
+  <p>{{REPEAT_THE_PATTERN_ABOVE_OR_DELETE}}</p>
+</section>
+
+<section id="trace">
+  <h2>变量追踪表</h2>
+  <p>用一个最小输入走一遍：<code>{{INPUT}}</code></p>
+  <table>
+    <thead><tr><th>行</th><th>执行了什么</th><th>变量当前值</th><th>输出</th></tr></thead>
+    <tbody>
+      <tr><td class="num">{{N}}</td><td>{{ACTION}}</td><td>{{VARS}}</td><td>{{OUT}}</td></tr>
+      <tr><td class="num">{{N}}'</td><td>循环结束 / 函数返回</td><td>—</td><td>{{FINAL}}</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="flow">
+  <h2>执行路径图</h2>
+  <div class="diagram">
+<div class="mermaid">
+flowchart TD
+  A["开始"] --> B["{{STEP}}"]
+  B --> C{"{{CONDITION}}"}
+  C -- "是" --> D["{{STEP}}"]
+  C -- "否" --> E["{{STEP}}"]
+  D --> F["结束"]
+  E --> F
+</div>
+  </div>
+</section>
+
+<section id="io">
+  <h2>输入 → 输出</h2>
+  <table>
+    <thead><tr><th>阶段</th><th>值</th></tr></thead>
+    <tbody>
+      <tr><td>输入</td><td><code>{{INPUT}}</code></td></tr>
+      <tr><td>中间结果</td><td><code>{{MID}}</code></td></tr>
+      <tr><td>最终输出</td><td><code>{{OUTPUT}}</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="pitfalls">
+  <h2>易错点</h2>
+  <table>
+    <thead><tr><th>错误写法</th><th>会发生什么</th><th>正确写法</th></tr></thead>
+    <tbody>
+      <tr><td><code>{{WRONG}}</code></td><td>{{CONSEQUENCE}}</td><td><code>{{RIGHT}}</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 可选区块：只在确有改进建议时保留。原代码必须原样保留，改动只能出现在这里 -->
+<section id="improve">
+  <h2>可改进点</h2>
+  <details open>
+    <summary>{{IMPROVEMENT_TITLE}}</summary>
+    <p><strong>原版：</strong></p>
+    <pre class="code-block" data-lang="{{LANG}}"><code>{{ORIGINAL}}</code></pre>
+    <p><strong>建议：</strong></p>
+    <pre class="code-block" data-lang="{{LANG}}"><code>{{SUGGESTED}}</code></pre>
+    <p>{{RATIONALE}}</p>
+  </details>
+</section>
+
+<section id="summary">
+  <h2>收尾总结</h2>
+  <p>{{PURPOSE_WHAT}}</p>
+  <p>{{METHOD_HOW}}</p>
+  <p>{{VERDICT}}</p>
+</section>
+
+<section id="quiz">
+  <h2>检验理解</h2>
+  <details>
+    <summary>{{QUESTION}}</summary>
+    <p>{{ANSWER}}</p>
+  </details>
+</section>
+
+<footer>{{MODE_SHORT}} · 生成于 {{DATE}} · 由 code-translator 技能生成</footer>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('theme');
+  var saved=null;
+  try{saved=localStorage.getItem('ce-theme');}catch(e){}
+  if(saved){root.setAttribute('data-theme',saved);}
+  function label(){btn.textContent=root.getAttribute('data-theme')==='dark'?'切换浅色':'切换深色';}
+  label();
+  btn.addEventListener('click',function(){
+    var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('ce-theme',next);}catch(e){}
+    label(); renderMermaid(next);
+  });
+
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  document.querySelectorAll('pre.code-block code').forEach(function(code){
+    var host=code.closest('pre.code-block');
+    var src=code.textContent.replace(/^\n+|\n+$/g,'').split('\n');
+    var start=parseInt(host.getAttribute('data-start')||'1',10)||1;
+    var hl=new Set();
+    (host.getAttribute('data-hl')||'').split(',').forEach(function(part){
+      var m=part.trim().match(/^(\d+)\s*(?:-\s*(\d+))?$/);
+      if(!m)return;
+      var a=+m[1], b=m[2]?+m[2]:a;
+      for(var i=a;i<=b;i++)hl.add(i);
+    });
+    code.innerHTML=src.map(function(line,i){
+      var n=start+i, hit=hl.has(n)?' hit':'';
+      return '<span class="ln'+hit+'"><span class="n">'+n+'</span>'+esc(line)+'</span>';
+    }).join('');
+  });
+
+  var nodes=document.querySelectorAll('.mermaid');
+  var sources=[].map.call(nodes,function(n){return n.textContent.trim();});
+  var loaded=false;
+  function fallback(){
+    nodes.forEach(function(n,i){
+      var pre=document.createElement('pre');
+      pre.textContent=sources[i];
+      n.replaceWith(pre);
+    });
+  }
+  function renderMermaid(theme){
+    if(!loaded||!window.mermaid)return;
+    nodes.forEach(function(n,i){
+      n.removeAttribute('data-processed');
+      n.innerHTML=sources[i];
+      try{
+        window.mermaid.run({nodes:[n],suppressErrors:true});
+      }catch(e){}
+    });
+  }
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
+  s.onload=function(){
+    try{
+      window.mermaid.initialize({startOnLoad:false,theme:'neutral',securityLevel:'loose'});
+      loaded=true; renderMermaid(root.getAttribute('data-theme'));
+    }catch(e){ fallback(); }
+  };
+  s.onerror=fallback;
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>

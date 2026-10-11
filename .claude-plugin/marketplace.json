@@ -1,0 +1,17 @@
+{
+  "name": "les1l",
+  "owner": {
+    "name": "Les1l",
+    "url": "https://github.com/Les1l"
+  },
+  "description": "Agent skills, as an installable Claude Code plugin. Layout follows nagi-studio/skills.",
+  "plugins": [
+    {
+      "name": "code-translator-skills",
+      "source": "./",
+      "description": "Turn a piece of code into plain language: a beginner deep dive or an experienced fast pass, any language, single-file HTML output.",
+      "category": "coding",
+      "keywords": ["skills", "agent-skills", "claude-code", "codex", "code-explanation"]
+    }
+  ]
+}

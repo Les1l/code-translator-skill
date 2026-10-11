@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Translator"
+  short_description: "把一段代码翻译成人话：零基础逐行精讲，或面向熟手的逐行速读"
+  default_prompt: "解释这段代码："

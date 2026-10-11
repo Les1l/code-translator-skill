@@ -1,0 +1,6 @@
+# 统一按文本处理，二进制文件由 Git 自动识别
+* text=auto
+
+# 仓库里有 shell 脚本。必须锁死 LF，否则在 Linux / macOS 上会因 CRLF 报
+# "bad interpreter" 直接跑不起来。
+*.sh text eol=lf
